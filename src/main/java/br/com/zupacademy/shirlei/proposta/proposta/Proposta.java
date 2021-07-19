@@ -4,16 +4,17 @@ import br.com.zupacademy.shirlei.proposta.validacao.CpfCnpj;
 import org.hibernate.validator.constraints.br.CNPJ;
 import org.hibernate.validator.constraints.br.CPF;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 
 
 @Entity
 public class Proposta {
+
+    public enum StatusProposta {
+        ELEGIVEL, NAO_ELEGIVEL
+    }
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,6 +36,12 @@ public class Proposta {
     @PositiveOrZero
     private BigDecimal salario;
 
+    @Enumerated(EnumType.STRING)
+    private StatusProposta status;
+
+    @Deprecated
+    public Proposta(){}
+
     public Proposta(
             @NotBlank String documento,
             @Email @NotBlank String email,
@@ -50,26 +57,37 @@ public class Proposta {
     }
 
     public Long getId() {
+
         return id;
     }
 
     public String getDocumento() {
+
         return documento;
     }
 
     public String getEmail() {
+
         return email;
     }
 
     public String getNome() {
+
         return nome;
     }
 
     public String getEndereco() {
+
         return endereco;
     }
 
     public BigDecimal getSalario() {
+
         return salario;
+    }
+
+    public void setStatus(StatusProposta status){
+
+        this.status = status;
     }
 }

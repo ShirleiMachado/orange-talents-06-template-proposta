@@ -56,6 +56,7 @@ public class PropostaDTO {
     }
 
     public String getDocumento() {
+
         return documento;
     }
 
