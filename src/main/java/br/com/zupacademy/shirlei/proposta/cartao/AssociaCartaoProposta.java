@@ -12,10 +12,10 @@ import java.util.List;
 @Component
 public class AssociaCartaoProposta {
 
-    private CartaoCliente cliente;
+    private CartaoRepository cliente;
     private PropostaRepository propostaRepository;
 
-    public AssociaCartaoProposta(CartaoCliente cliente,
+    public AssociaCartaoProposta(CartaoRepository cliente,
                                  PropostaRepository propostaRepository) {
         this.cliente = cliente;
         this.propostaRepository = propostaRepository;
@@ -23,7 +23,7 @@ public class AssociaCartaoProposta {
 
     @Scheduled(fixedDelayString = "20000")
     private void verificaNovosCartoes() {
-      //  System.out.println("Verificando sistema de cartões");
+        //System.out.println("Verificando cartões");
         List<Proposta> propostasElegiveisSemCartao = propostaRepository.findByStatusAndCartaoNull(Proposta.StatusProposta.ELEGIVEL);
         if (propostasElegiveisSemCartao.isEmpty()) {
             return;
@@ -33,8 +33,8 @@ public class AssociaCartaoProposta {
 
     private void associaCartao(Proposta proposta) {
         try {
-            CartaoDTO cartaoResponse = cliente.pegaCartao(String.valueOf(proposta.getId()));
-            proposta.associaCartao(cartaoResponse.toModel(proposta));
+            CartaoDTO cartaoDTO = cliente.consultaCartao(String.valueOf(proposta.getId()));
+            proposta.associaCartao(cartaoDTO.converter(proposta));
             propostaRepository.save(proposta);
         } catch (FeignException e) {
             System.out.println("Tentando novamente");

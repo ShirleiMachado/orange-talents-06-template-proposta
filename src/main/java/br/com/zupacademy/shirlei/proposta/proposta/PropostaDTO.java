@@ -1,11 +1,10 @@
 package br.com.zupacademy.shirlei.proposta.proposta;
 
 import br.com.zupacademy.shirlei.proposta.validacao.CpfCnpj;
-import org.hibernate.validator.constraints.br.CNPJ;
-import org.hibernate.validator.constraints.br.CPF;
 
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
+
 
 public class PropostaDTO {
 
@@ -38,13 +37,6 @@ public class PropostaDTO {
         this.salario = salario;
     }
 
-//    public PropostaDTO(Proposta proposta) {
-//        this.documento = proposta.getDocumento();
-//        this.email = email;
-//        this.nome = proposta.getNome();
-//        this.endereco = endereco;
-//        this.salario = salario;
-//    }
 
     public Proposta converter() {
         return new Proposta(

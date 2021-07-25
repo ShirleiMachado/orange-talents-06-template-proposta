@@ -1,6 +1,5 @@
 package br.com.zupacademy.shirlei.proposta.cartao;
 
-
 import br.com.zupacademy.shirlei.proposta.proposta.Proposta;
 
 import java.time.LocalDateTime;
@@ -19,17 +18,20 @@ public class CartaoDTO {
         this.idProposta = idProposta;
     }
 
-    public Cartao toModel(Proposta proposta) {
-        return new Cartao(this.id, this.emitidoEm, this.titular, proposta);
+    public Cartao converter(Proposta proposta) {
+
+        return new Cartao(
+                this.id, this.emitidoEm, this.titular, proposta);
     }
 
     @Override
     public String toString() {
-        return "NovoCartaoResponse{" +
+        return "CartaoDTO{" +
                 "id='" + id + '\'' +
                 ", emitidoEm=" + emitidoEm +
                 ", titular='" + titular + '\'' +
                 ", idProposta='" + idProposta + '\'' +
                 '}';
     }
+
 }
