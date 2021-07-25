@@ -1,8 +1,8 @@
 package br.com.zupacademy.shirlei.proposta.proposta;
 
+import br.com.zupacademy.shirlei.proposta.cartao.Cartao;
 import br.com.zupacademy.shirlei.proposta.validacao.CpfCnpj;
-import org.hibernate.validator.constraints.br.CNPJ;
-import org.hibernate.validator.constraints.br.CPF;
+import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -39,6 +39,9 @@ public class Proposta {
     @Enumerated(EnumType.STRING)
     private StatusProposta status;
 
+    @OneToOne(cascade = CascadeType.MERGE)
+    private Cartao cartao;
+
     @Deprecated
     public Proposta(){}
 
@@ -66,28 +69,23 @@ public class Proposta {
         return documento;
     }
 
-    public String getEmail() {
-
-        return email;
-    }
-
     public String getNome() {
 
         return nome;
     }
 
-    public String getEndereco() {
-
-        return endereco;
-    }
-
-    public BigDecimal getSalario() {
-
-        return salario;
-    }
-
     public void setStatus(StatusProposta status){
 
         this.status = status;
+    }
+
+    public void associaCartao(Cartao cartao) {
+        Assert.isTrue(this.aprovada(), "Não se pode associar um cartão a uma proposta não aprovada.");
+        Assert.isTrue(this.cartao == null, "Esta proposta já possui um cartão associado a ela");
+        this.cartao = cartao;
+    }
+
+    public boolean aprovada() {
+        return this.status.equals(StatusProposta.ELEGIVEL);
     }
 }

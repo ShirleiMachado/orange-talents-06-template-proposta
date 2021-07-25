@@ -8,4 +8,6 @@ public enum StatusAnalise {
     public Proposta.StatusProposta toStatusProposta(){
         return this.equals(SEM_RESTRICAO)?Proposta.StatusProposta.ELEGIVEL:Proposta.StatusProposta.NAO_ELEGIVEL;
     }
+
+
 }

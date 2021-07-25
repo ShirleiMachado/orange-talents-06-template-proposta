@@ -38,13 +38,13 @@ public class PropostaDTO {
         this.salario = salario;
     }
 
-    public PropostaDTO(Proposta proposta) {
-        this.documento = proposta.getDocumento();
-        this.email = proposta.getEmail();
-        this.nome = proposta.getNome();
-        this.endereco = proposta.getEndereco();
-        this.salario = proposta.getSalario();
-    }
+//    public PropostaDTO(Proposta proposta) {
+//        this.documento = proposta.getDocumento();
+//        this.email = email;
+//        this.nome = proposta.getNome();
+//        this.endereco = endereco;
+//        this.salario = salario;
+//    }
 
     public Proposta converter() {
         return new Proposta(
@@ -59,5 +59,11 @@ public class PropostaDTO {
 
         return documento;
     }
+
+    public String getNome() {
+
+        return nome;
+    }
+
 
 }

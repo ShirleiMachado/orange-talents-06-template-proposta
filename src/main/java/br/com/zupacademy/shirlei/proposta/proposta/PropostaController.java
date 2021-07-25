@@ -1,7 +1,10 @@
 package br.com.zupacademy.shirlei.proposta.proposta;
 
+
 import br.com.zupacademy.shirlei.proposta.analiseProposta.AnaliseCliente;
 import br.com.zupacademy.shirlei.proposta.analiseProposta.AnaliseRequest;
+import br.com.zupacademy.shirlei.proposta.analiseProposta.AnaliseResponse;
+import br.com.zupacademy.shirlei.proposta.analiseProposta.StatusAnalise;
 import br.com.zupacademy.shirlei.proposta.exception.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -17,15 +20,16 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Arrays;
-import java.util.Collections;
 
 @RestController
 @RequestMapping("/proposta")
 public class PropostaController {
 
+
     @Autowired
     private PropostaRepository propostaRepository;
-    private final AnaliseCliente cliente;
+    private AnaliseCliente cliente;
+
 
     public PropostaController(PropostaRepository propostaRepository, AnaliseCliente cliente) {
         this.propostaRepository = propostaRepository;
@@ -33,24 +37,32 @@ public class PropostaController {
     }
 
     @PostMapping
-    @CacheEvict(value="listaPropostas", allEntries = true)
+    @Transactional
+    @CacheEvict(value = "listaPropostas", allEntries = true)
     public ResponseEntity <?>cria(@RequestBody @Valid PropostaDTO request, UriComponentsBuilder uriComponentsBuilder){
 
         if (documentoJaExiste(request.getDocumento())) {
-            ErrorResponse errorResponse = new ErrorResponse(Collections.singletonList("Não é permitido mais de uma proposta para um mesmo solicitante"));
+            ErrorResponse errorResponse = new ErrorResponse(Arrays.asList("Não é permitido mais de uma proposta para um mesmo solicitante"));
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errorResponse);
         }
 
         Proposta proposta = request.converter();
         salvaProposta(proposta);
 
-        AnaliseRequest pedidoAvaliacao = new AnaliseRequest(request.getDocumento(), request.converter().getNome(), String.valueOf(proposta.getId()));
-        atualizaStatusDaProposta(pedidoAvaliacao, proposta);
+        AnaliseRequest pedidoAvaliacao = new AnaliseRequest(request.getDocumento(), request.getNome(), String.valueOf(proposta.getId()));
+        AnaliseResponse analiseResponse = new AnaliseResponse();
+        try {
+            analiseResponse = cliente.verificaStatusSolicitante(pedidoAvaliacao);
+
+        }catch (Throwable t){
+            analiseResponse = new AnaliseResponse(pedidoAvaliacao.getDocumento(), pedidoAvaliacao.getNome(), StatusAnalise.COM_RESTRICAO, pedidoAvaliacao.getIdProposta());
+        }
+        proposta.setStatus(analiseResponse.getResultadoSolicitacao());
         salvaProposta(proposta);
 
+        URI uri = uriComponentsBuilder.path("/propostas/{id}").buildAndExpand(proposta.getId()).toUri();
+        return ResponseEntity.created(uri).build();
 
-        URI uri = uriComponentsBuilder.path("/proposta/{id}").buildAndExpand(proposta.getId()).toUri();
-        return ResponseEntity.created(uri).body(new PropostaDTO(proposta));
     }
 
     private boolean documentoJaExiste(String documento){
@@ -60,5 +72,6 @@ public class PropostaController {
     private void salvaProposta(Proposta proposta) {
         propostaRepository.save(proposta);
     }
-    private void atualizaStatusDaProposta(AnaliseRequest pedidoAvaliacao, Proposta proposta){}
-}
+    }
+
+

@@ -21,7 +21,10 @@ public class AnaliseResponse {
         this.idProposta = idProposta;
     }
 
+    public AnaliseResponse (){}
+
     public Proposta.StatusProposta getResultadoSolicitacao(){
+
         return resultadoSolicitacao.toStatusProposta();
     }
 }
